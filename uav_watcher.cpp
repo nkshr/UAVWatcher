@@ -161,9 +161,16 @@ void draw(void)
 	}
 	glEnd();
 	glPopMatrix();
-	line3D(x_axis.at<double>(0, 0) + uav_pos[0], uav_pos[1], uav_pos[2], uav_pos[0], uav_pos[1], uav_pos[2]);
-	line3D(uav_pos[0], uav_pos[1], uav_pos[2], y_axis.at<double>(0, 0) + uav_pos[0], uav_pos[1], uav_pos[2]);
-	line3D(uav_pos[0], uav_pos[1], uav_pos[0], uav_pos[1], uav_pos[2], z_axis.at<double>(0, 0) + uav_pos[2]);
+
+	glColor3d(1.0, 0.0, 0.0);
+	line3D(x_axis.at<double>(0, 0) + uav_pos[0], x_axis.at<double>(1, 0) + uav_pos[1], x_axis.at<double>(2, 0) + uav_pos[2],
+		uav_pos[0], uav_pos[1], uav_pos[2]);
+	glColor3d(0.0, 1.0, 0.0);
+	line3D(y_axis.at<double>(0, 0) + uav_pos[0], y_axis.at<double>(1, 0) + uav_pos[1], y_axis.at<double>(2, 0) + uav_pos[2],
+		uav_pos[0], uav_pos[1], uav_pos[2]);
+	glColor3d(0.0, 0.0, 1.0);
+	line3D(z_axis.at<double>(0, 0) + uav_pos[0], z_axis.at<double>(1, 0) + uav_pos[1], z_axis.at<double>(2, 0) + uav_pos[2],
+		uav_pos[0], uav_pos[1], uav_pos[2]);
 }
 
 Camera cam(0, 0, 500);
@@ -181,7 +188,7 @@ void display()
 		cerr << "Error: socket communication not well." << endl;
 		exit(EXIT_FAILURE);
 	}
-	cout << buf << endl;
+	//cout << buf << endl;
 	char *value = strtok(buf, " ");
 	for (int i = 0; i < 6; ++i)
 	{
@@ -189,7 +196,7 @@ void display()
 			uav_pos[i] = atof(value);
 		else
 			uav_rvec.at<double>(i - 3, 0) = atof(value);
-		cout << value << endl;
+		//cout << value << endl;
 		value = strtok(NULL, " ");
 	}
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -211,8 +218,8 @@ void display()
 GLdouble temp[3];
 void rotate_uav()
 {
-
 	Rodrigues(uav_rvec, uav_rmat);
+	cout << uav_rmat << endl;
 	for (int i = 0; i < 8; ++i)
 	{
 		for (int j = 0; j < 3; ++j)
