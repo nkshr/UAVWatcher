@@ -90,6 +90,9 @@ double height = 10;
 double width = 30;
 GLfloat uav_pos[3] = { 0, 0, 0 };
 Mat uav_rvec(3, 1, CV_64F), uav_rmat(3, 3, CV_64F);
+Mat x_axis = (Mat_<double>(3, 1) << 100, 0, 0);
+Mat y_axis = (Mat_<double>(3, 1) << 0, 100, 0);
+Mat z_axis = (Mat_<double>(3, 1) << 0, 0, 100);
 GLdouble uav[][3] = {
 	{ 0.0, 0.0, 0.0 },
 	{ width, 0.0, 0.0 },
@@ -148,8 +151,8 @@ void draw(void)
 
 	rotate_uav();
 	glPushMatrix();
-	glColor3d(0.0, 1.0, 1.0);//F‚ÌÝ’è
-	glTranslated(uav_pos[0], uav_pos[1], uav_pos[2]);//•½sˆÚ“®’l‚ÌÝ’è
+	glColor3d(0.0, 1.0, 1.0);
+	glTranslated(uav_pos[0], uav_pos[1], uav_pos[2]);
 	glBegin(GL_QUADS);
 	for (int j = 0; j < 6; ++j) {
 		for (int i = 0; i < 4; ++i) {
@@ -158,12 +161,12 @@ void draw(void)
 	}
 	glEnd();
 	glPopMatrix();
-	
-
-
+	line3D(x_axis.at<double>(0, 0) + uav_pos[0], uav_pos[1], uav_pos[2], uav_pos[0], uav_pos[1], uav_pos[2]);
+	line3D(uav_pos[0], uav_pos[1], uav_pos[2], y_axis.at<double>(0, 0) + uav_pos[0], uav_pos[1], uav_pos[2]);
+	line3D(uav_pos[0], uav_pos[1], uav_pos[0], uav_pos[1], uav_pos[2], z_axis.at<double>(0, 0) + uav_pos[2]);
 }
 
-Camera cam(0, 0, 100);
+Camera cam(0, 0, 500);
 
 char buf[64];
 int n;
@@ -220,6 +223,9 @@ void rotate_uav()
 		}
 		memcpy(uav[i], temp, sizeof(temp));
 	}
+	x_axis = uav_rmat * x_axis;
+	y_axis = uav_rmat * y_axis;
+	z_axis = uav_rmat * z_axis;
 }
 
 void init()
@@ -232,7 +238,7 @@ void init()
 
 	server.sin_family = AF_INET;
 	server.sin_port = htons(12345);
-	server.sin_addr.s_addr = inet_addr("172.18.1.10");
+	server.sin_addr.s_addr = inet_addr("192.168.0.3");
 
 	connect(sock, (struct sockaddr *)&server, sizeof(server));
 	
